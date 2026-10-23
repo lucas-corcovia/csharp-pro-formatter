@@ -1,0 +1,7 @@
+interface:
+  display_name: "CSharp Pro Formatter"
+  short_description: "C# limpo e bem formatado: Allman, 4 espaços, 120 colunas, uma instrução por linha"
+  default_prompt: "Use $csharp-pro-formatter para varrer o projeto e corrigir a formatação de todos os arquivos .cs, sem mudar lógica nem nomes."
+
+policy:
+  allow_implicit_invocation: true
