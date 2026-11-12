@@ -80,14 +80,13 @@ var ativos = await _context.Clientes
     .ToListAsync(cancellationToken);
 ```
 
-3. **Parâmetros ou argumentos** → se não cabem, **todos** um por linha, `(` na linha do nome, `)` junto do último.
+3. **Parâmetros ou argumentos** → mantenha na mesma linha quando couber. Se passar de 120 colunas, quebre em grupos
+   naturais com vários parâmetros ou argumentos por linha; não coloque um por linha por padrão. Mantenha `(` na linha
+   do nome e `)` junto ao último grupo.
 
 ```csharp
-public async Task<Result<ContratoDto>> RenovarContratoAsync(
-    int idContrato,
-    DateTime dataRenovacao,
-    bool manterDesconto,
-    CancellationToken cancellationToken)
+public async Task<Result<ContratoDto>> RenovarContratoAsync(int idContrato, DateTime dataRenovacao,
+    bool manterDesconto, CancellationToken cancellationToken)
 {
 ```
 
@@ -152,7 +151,26 @@ await repositorio.RegistrarHistoricoAsync(produto, cancellationToken);
 ```
 
 Além disso:
-- **Uma** linha em branco entre membros (campos de um mesmo grupo podem ficar juntos).
+- **Uma** linha em branco entre membros (campos de um mesmo grupo podem ficar juntos). Entre métodos, ela é
+  obrigatória mesmo quando o próximo método começa com atributos: a linha em branco fica antes do primeiro atributo.
+  Atributos continuam colados ao método que decoram.
+- Exemplo — mantenha a separação entre os métodos e agrupe os parâmetros em vez de pôr um em cada linha:
+
+```csharp
+[HttpGet("movements")]
+[OrganizationPermission(Permissions.ViewFinancial)]
+public async Task<IActionResult> Movements(Guid organizationId, [FromQuery] FinancialQuery query,
+    CancellationToken cancellationToken) =>
+    CustomResponse(await financial.MovementsAsync(organizationId, query, cancellationToken));
+
+[HttpGet("audits")]
+[OrganizationPermission(Permissions.ViewFinancial)]
+public async Task<IActionResult> Audits(Guid organizationId, [FromQuery] FinancialQuery query,
+    CancellationToken cancellationToken) =>
+    CustomResponse(await financial.AuditsAsync(organizationId, query, cancellationToken));
+```
+
+- **Não** separe instruções simples que fazem parte do mesmo grupo lógico só para inserir linhas em branco.
 - **Uma** linha em branco separando grupos lógicos de instruções simples dentro do método: declarações → validação →
   ação → retorno.
 - **Nunca** duas linhas em branco seguidas.
@@ -322,7 +340,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "<skill>\scripts\check-white
 - [ ] 4 espaços, sem tab; chaves Allman; `else/catch/finally` em linha nova.
 - [ ] Uma instrução por linha; nada depois de `{` nem antes/depois de `}`; nenhum bloco numa linha só.
 - [ ] Nenhum corpo de `if/for/while/else` na mesma linha da condição.
-- [ ] Nenhuma linha acima de 120 colunas; quebras antes de `&&`/`||`, um `.Metodo()` por linha, parâmetros um por linha.
+- [ ] Nenhuma linha acima de 120 colunas; quebras antes de `&&`/`||`, um `.Metodo()` por linha e parâmetros agrupados
+      em quebras naturais, sem um por linha por padrão.
 - [ ] Nenhum bloco colado: linha em branco antes de `if/for/foreach/while/switch/try/using` e depois de `}` ou do
   corpo sem chaves (`var` colado em `if` ou `}` colado em `await` é defeito).
 - [ ] Linha em branco entre membros e entre grupos lógicos; nunca duas seguidas; nenhuma após `{` ou antes de `}`.

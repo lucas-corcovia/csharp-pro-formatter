@@ -33,7 +33,7 @@ await repositorio.RegistrarHistoricoAsync(produto, cancellationToken);
 - **Chaves Allman**: `{` e `}` sozinhas na linha; `else`, `catch` e `finally` na linha seguinte.
 - **Uma instrução por linha**: nada de bloco numa linha só nem corpo de `if` na mesma linha da condição.
 - **Limite de 120 colunas** (ou o `max_line_length` do `.editorconfig`), com quebras naturais: antes de `&&`/`||`,
-  um `.Metodo()` por linha em LINQ e um parâmetro por linha.
+  um `.Metodo()` por linha em LINQ e parâmetros agrupados em linhas de continuação, sem um por linha por padrão.
 - **Blocos nunca colados**: linha em branco antes de `if/for/foreach/while/switch/try/using` e depois de `}` ou do
   corpo sem chaves.
 - Espaçamento correto (`if (x)`, `a + b`, `f(a, b)`), sem espaço no fim da linha e sem linhas em branco duplicadas.

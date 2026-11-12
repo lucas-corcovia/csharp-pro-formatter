@@ -58,7 +58,8 @@ Se o projeto usa namespace com bloco (`namespace X { ... }`), mantenha o padrão
 
 ## 2. Assinaturas de método e construtores
 
-Cabe em 120 colunas → uma linha. Não cabe → **todos** os parâmetros um por linha.
+Cabe em 120 colunas → uma linha. Se passar do limite, quebre em grupos naturais com vários parâmetros por linha.
+Não coloque um parâmetro por linha por padrão.
 
 Ruim:
 
@@ -70,12 +71,8 @@ public async Task<Result<PagamentoDto>> RegistrarPagamentoAsync(int idVenda, dec
 Bom:
 
 ```csharp
-public async Task<Result<PagamentoDto>> RegistrarPagamentoAsync(
-    int idVenda,
-    decimal valor,
-    EFormaPagamento formaPagamento,
-    DateTime dataPagamento,
-    CancellationToken cancellationToken)
+public async Task<Result<PagamentoDto>> RegistrarPagamentoAsync(int idVenda, decimal valor,
+    EFormaPagamento formaPagamento, DateTime dataPagamento, CancellationToken cancellationToken)
 {
     ...
 }
@@ -98,20 +95,17 @@ Ruim:
 var resultado = await _servicoFinanceiro.GerarCobrancaAsync(contrato.Id, contrato.IdCliente, CalcularValor(contrato.Plano, contrato.Desconto), DateTime.Today.AddDays(7), cancellationToken);
 ```
 
-Bom — extraia o aninhado e quebre os argumentos:
+Bom — extraia o aninhado. A chamada abaixo cabe em 120 colunas, então mantenha os argumentos juntos:
 
 ```csharp
 var valor = CalcularValor(contrato.Plano, contrato.Desconto);
 var vencimento = DateTime.Today.AddDays(7);
 
-var resultado = await _servicoFinanceiro.GerarCobrancaAsync(
-    contrato.Id,
-    contrato.IdCliente,
-    valor,
-    vencimento,
+var resultado = await _servicoFinanceiro.GerarCobrancaAsync(contrato.Id, contrato.IdCliente, valor, vencimento,
     cancellationToken);
 ```
 
+Se uma chamada passar de 120 colunas, divida os argumentos em grupos legíveis, mantendo vários por linha quando couber.
 Argumentos nomeados ajudam quando há booleanos ou literais: `Enviar(email, notificarGestor: true)`.
 
 ## 4. LINQ
@@ -410,16 +404,28 @@ Em laço, use `StringBuilder`. Nunca quebre uma string literal no meio só para 
 
 ## 13. Expression-bodied members
 
-Use `=>` para membro de uma expressão curta. Se não couber, quebre depois do `=>`, +4 espaços:
+Use `=>` para método pequeno, com assinatura e expressão curtas que caibam em uma linha. Métodos com quatro ou mais
+parâmetros, expressão longa ou corpo que precise de quebras devem usar chaves e `return` quando necessário.
 
 ```csharp
 public override string ToString() => $"{Nome} ({Email})";
 
-public decimal CalcularTotal() =>
-    Itens.Sum(i => i.Quantidade * i.ValorUnitario) - Desconto;
+public decimal CalcularTotal() => Itens.Sum(i => i.Quantidade * i.ValorUnitario) - Desconto;
 ```
 
-Se precisar de mais de uma instrução, use corpo com chaves.
+Se a assinatura ou expressão não couber em uma linha, prefira corpo com chaves em vez de quebrar a expressão depois
+do `=>`. Métodos com mais de uma instrução usam corpo com chaves.
+
+Assinatura e chamada com vários parâmetros — agrupe os parâmetros e mantenha a chamada numa linha quando couber:
+
+```csharp
+public async Task<IActionResult> ReverseMovement(Guid organizationId, Guid id,
+    ReverseFinancialMovementRequest request, CancellationToken cancellationToken)
+{
+    var result = await financial.ReverseMovementAsync(organizationId, id, User.UserId(), request, cancellationToken);
+    return MutationResponse(result);
+}
+```
 
 ## 14. Linhas em branco dentro de métodos
 
